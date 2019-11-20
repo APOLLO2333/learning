@@ -1,18 +1,17 @@
-package com.song.client;
+package com.song.ribbon;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class ClientOneController {
+public class RibbonController {
 
     @Autowired
-    private ClientOneService clientOneService;
+    private RibbonService ribbonService;
 
     @GetMapping("/hello")
     public String hello() {
-        return clientOneService.hello();
+        return ribbonService.hello();
     }
 }
