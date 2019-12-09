@@ -21,7 +21,7 @@ public class ZookeeperApplicationTests {
     public void contextLoads() {
     }
 
-    ZooKeeper zooKeeper;
+    private ZooKeeper zooKeeper;
 
     @Before
     public void init() throws IOException {
