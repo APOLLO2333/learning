@@ -43,7 +43,6 @@ public class MybatisApplicationTests {
     }
 
 
-
     //MyBatis的二级缓存相对于一级缓存来说，实现了SqlSession之间缓存数据的共享，同时粒度更加的细，能够到namespace级别，通过Cache接口实现类不同的组合，对Cache的可控性也更强。
     //MyBatis在多表查询时，极大可能会出现脏数据，有设计上的缺陷，安全使用二级缓存的条件比较苛刻。
     //在分布式环境下，由于默认的MyBatis Cache实现都是基于本地的，分布式环境下必然会出现读取到脏数据，需要使用集中式缓存将MyBatis的Cache接口实现，有一定的开发成本，直接使用Redis、Memcached等分布式缓存可能成本更低，安全性也更高。
@@ -56,6 +55,17 @@ public class MybatisApplicationTests {
         personService.list();
         personService.updateById(p);
         personService.list();
+    }
+
+    @Test
+    public void insert() {
+        String name = "song";
+        Person p = new Person();
+        for (int i = 100000; i < 1000000; i++) {
+            p.setName(name + i);
+            p.setAge(i + 1);
+            personService.save(p);
+        }
     }
 
 

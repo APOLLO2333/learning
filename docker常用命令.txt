@@ -1,0 +1,25 @@
+docker start
+docker restart
+docker stop
+docker rm
+docker run
+	-d	守护进程模式
+	-p	映射端口
+	-v	挂载目录
+	--link	与外部容器连接
+	--name	取名
+
+docker ps
+	-a	全部
+docker logs
+	--since	时间段
+	--tail	最后多少行
+docker exec -it ... /bin/bash	进入容器
+docker cp ... cn:/
+docker cp cn: ... /
+
+docker search	查找镜像
+docker pull	拉去镜像
+docker rmi	删除镜像
+docker build -t  ... .	生成镜像
+docker images	查看本地镜像

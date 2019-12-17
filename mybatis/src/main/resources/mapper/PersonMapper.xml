@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.song.mybatis.mapper.PersonMapper">
+    <resultMap id="col" type="com.song.mybatis.entity.PersonAttrs">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"/>
+        <collection property="attrs" ofType="com.song.mybatis.entity.Attrs" select="attrs" column="id">
+            <id property="id" column="id"/>
+            <result property="attr" column="attr"/>
+            <result property="value" column="value"/>
+        </collection>
+    </resultMap>
 
+    <resultMap id="ass" type="com.song.mybatis.entity.PersonParent">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"/>
+        <association property="parent" javaType="com.song.mybatis.entity.Parent" select="parent" column="id">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+            <result property="person_id" column="personId"/>
+        </association>
+    </resultMap>
+
+    <select id="getPersonAttsById" resultMap="col">
+        select * from person p  where p.id = #{id}
+    </select>
+    <select id="attrs" resultType="com.song.mybatis.entity.Attrs" parameterType="Integer">
+        select * from attrs where person_id = #{id}
+    </select>
+
+    <select id="parent" resultType="com.song.mybatis.entity.Parent" parameterType="Integer">
+        select * from parent where person_id = #{id}
+    </select>
+
+    <select id="getPersonParentById" resultMap="ass">
+         select * from person p  where p.id = #{id}
+    </select>
 </mapper>
