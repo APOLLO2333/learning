@@ -1,5 +1,10 @@
 package com.song.redis;
 
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.redisson.config.SingleServerConfig;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -18,7 +23,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class RedisConfig {
     @Bean
-    public RedisTemplate<String, Serializable> redisTemplate(RedisConnectionFactory factory) {
+    public RedisTemplate<String, Serializable> redisTemplate(@Qualifier("redissonConnectionFactory") RedisConnectionFactory factory) {
         RedisTemplate<String, Serializable> template = new RedisTemplate<>();
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
@@ -28,7 +33,7 @@ public class RedisConfig {
 
 
     @Bean
-    public TaskExecutor threadPoolTaskExecutor(){
+    public TaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         // 设置核心线程数
         executor.setCorePoolSize(5);
@@ -45,6 +50,17 @@ public class RedisConfig {
         // 等待所有任务结束后再关闭线程池
         executor.setWaitForTasksToCompleteOnShutdown(true);
         return executor;
+    }
+
+    @Bean
+    public RedissonClient redissonClient() {
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://127.0.0.1:6379")
+                .setDatabase(1)
+                .setTimeout(3000)
+                .setConnectionPoolSize(10)
+                .setConnectionMinimumIdleSize(9);
+        return Redisson.create(config);
     }
 }
 

@@ -1,6 +1,8 @@
 package com.song.redis;
 
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -8,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
@@ -16,24 +19,49 @@ public class AgeAddService {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private RedissonClient redissonClient;
+
 
     @Async
-    public Integer addAge(Person person) {
+    public void addAge(Person person) {
         try {
             boolean flag = true;
             while (flag) {
                 if (lock()) {
                     person.setAge(person.getAge() + 1);
                     log.info("age:{}", person.getAge());
-                    unlock();
                     flag = false;
                 }
             }
         } catch (Exception e) {
-            return 0;
+            e.printStackTrace();
+        } finally {
+            unlock();
         }
-        return 1;
     }
+
+
+    //tryLock的三个参数含义
+    //1.等待锁时间
+    //2.拥有锁时间
+    //3.时间的单位
+
+    @Async
+    public void addAgeRedisson(Person person) {
+        RLock lock = redissonClient.getLock("lockRedisson");
+        try {
+            if (lock.tryLock(30, 5, TimeUnit.SECONDS)) {
+                person.setAge(person.getAge() + 1);
+                log.info("age:{}", person.getAge());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+    }
+
 
     public boolean lock() {
         return (boolean) redisTemplate.execute((RedisCallback) redisConnection -> {
