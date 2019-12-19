@@ -44,8 +44,6 @@ public class RedisSyTests {
         return (boolean) redisTemplate.execute((RedisCallback) redisConnection -> {
             long expireAt = System.currentTimeMillis() + 5000 + 1;
             Boolean acquire = redisConnection.setNX("lock".getBytes(), String.valueOf(expireAt).getBytes());
-            System.out.println(acquire == null);
-
             if (acquire) {
                 return true;
             } else {
