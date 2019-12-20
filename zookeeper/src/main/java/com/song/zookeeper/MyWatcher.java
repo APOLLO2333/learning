@@ -97,8 +97,22 @@ public class MyWatcher implements Watcher {
 
     @Override
     public void process(WatchedEvent watchedEvent) {
-        if (countDownLatch != null && watchedEvent.getType() == Event.EventType.NodeDeleted) {
-            countDownLatch.countDown();
+        try {
+            if (countDownLatch != null && watchedEvent.getType() == Event.EventType.NodeDeleted) {
+                List<String> nodes = zooKeeper.getChildren(rootNode, false);
+                Collections.sort(nodes);
+                if (currentNode.equals(nodes.get(0))) {
+                    countDownLatch.countDown();
+                } else {
+                    waitNode = nodes.get(nodes.indexOf(currentNode) - 1);
+                    Stat stat = zooKeeper.exists(rootNode + "/" + waitNode, true);
+                    if (null == stat) {
+                        countDownLatch.countDown();
+                    }
+                }
+            }
+        } catch (InterruptedException | KeeperException e) {
+            e.printStackTrace();
         }
     }
 }
