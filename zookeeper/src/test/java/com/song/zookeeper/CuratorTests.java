@@ -23,7 +23,7 @@ public class CuratorTests {
 
     @Before
     public void init() {
-        client = CuratorFrameworkFactory.newClient("120.78.149.155:8040", new ExponentialBackoffRetry(3000, 3, Integer.MAX_VALUE));
+        client = CuratorFrameworkFactory.newClient("127.0.0.1:2181", new ExponentialBackoffRetry(3000, 3, Integer.MAX_VALUE));
         client.start();
     }
 

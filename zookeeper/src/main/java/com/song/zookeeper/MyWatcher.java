@@ -24,10 +24,11 @@ public class MyWatcher implements Watcher {
         conn();
     }
 
+    //建立连接
     private void conn() {
         Stat stat;
         try {
-            this.zooKeeper = new ZooKeeper("120.78.149.155:8040", 20000, this);
+            this.zooKeeper = new ZooKeeper("127.0.0.1:2181", 30000, this);
             stat = this.zooKeeper.exists(this.rootNode, false);
             if (stat == null) {
                 this.zooKeeper.create(this.rootNode, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
@@ -47,6 +48,7 @@ public class MyWatcher implements Watcher {
 
     }
 
+    //创建节点，判断自己是否为最小节点，是则获得锁，不是则监听上一个节点
     private boolean tryLock() throws KeeperException, InterruptedException {
         currentNode = zooKeeper.create(rootNode + "/" + lockNode, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
         currentNode = currentNode.split("/")[2];
@@ -60,6 +62,7 @@ public class MyWatcher implements Watcher {
         return false;
     }
 
+    //使用计数器等待节点锁释放
     private boolean waitLock() {
         boolean lock = false;
         try {

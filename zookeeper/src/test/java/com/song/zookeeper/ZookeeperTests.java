@@ -19,11 +19,10 @@ public class ZookeeperTests {
     @Test
     public void test() {
         Person person = new Person(0);
-        String root = "/test";
+        String root = "/zTest";
         String lockNode = "locked";
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 20; i++) {
             taskExecutor.execute(new AgeAdd(person, new MyWatcher(root, lockNode)));
-//        new AgeAdd(person, new MyWatcher(root, lockNode)).run();
         }
         try {
             Thread.sleep(10000);
